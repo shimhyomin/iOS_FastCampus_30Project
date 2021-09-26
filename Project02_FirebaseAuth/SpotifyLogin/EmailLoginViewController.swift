@@ -80,6 +80,8 @@ class EmailLoginViewController: UIViewController {
     }
 }
 
+// MARK: - UITextFieldDelegate
+
 extension EmailLoginViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         //return 누르면 keyboard 내리기
