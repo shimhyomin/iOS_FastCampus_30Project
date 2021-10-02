@@ -72,6 +72,44 @@ class CardListViewController: UITableViewController {
         
         detailViewController.promotionDetail = creditCardList[indexPath.row].promotionDetail
         self.show(detailViewController, sender: nil)
+        
+        //Firebase Realtime Database에 값 쓰기
+        /* 1. id를 알 때 */
+        let cardID = creditCardList[indexPath.row].id
+        ref.child("Item\(cardID)").child("isSelected").setValue(true)
+        
+        /* 2. id를 모를 때 */
+//        let cardID = creditCardList[indexPath.row].id
+//        ref.queryOrdered(byChild: "id").queryEqual(toValue: cardID).observe(.value) { [weak self] snapshot in
+//            guard let self = self,
+//                  let value = snapshot.value as? [String: [String: Any]],
+//                  let key = value.keys.first else { return }
+//            self.ref.child("\(key)/isSelected").setValue(true)
+//        }
+    }
+    
+    //Cell Swipe해서 삭제
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            //Firebase Realtime Database에 값 삭제
+            /* 1. id를 알 때
+            let cardID = creditCardList[indexPath.row].id
+            ref.child("Item\(cardID)").removeValue()
+            */
+            
+            /* 2. id를 모를 때 */
+            let cardID = creditCardList[indexPath.row].id
+            ref.queryOrdered(byChild: "id").queryEqual(toValue: cardID).observe(.value) { [weak self] snapshot in
+                guard let self = self,
+                      let value = snapshot.value as? [String: [String: Any]],
+                      let key = value.keys.first else { return }
+                self.ref.child(key).removeValue()
+            }
+        }
     }
     
 }
