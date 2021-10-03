@@ -9,7 +9,11 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    private var diaryList: [Diary] = []
+    private var diaryList: [Diary] = [] {
+        didSet {
+            self.saveDiaryList()
+        }
+    }
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -17,6 +21,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         self.configureCollectionView()
+        
+        self.loadDiaryList()
     }
 
     private func configureCollectionView() {
@@ -40,12 +46,45 @@ class ViewController: UIViewController {
         return formatter.string(from: date)
     }
     
+    private func saveDiaryList() {
+        let date = self.diaryList.map {
+            [
+                "title": $0.title,
+                "content": $0.content,
+                "date": $0.date,
+                "isStar": $0.isStar
+            ]
+        }
+        let userDefault = UserDefaults.standard
+        userDefault.set(date, forKey: "diaryList")
+    }
+    
+    private func loadDiaryList() {
+        let userDefult = UserDefaults.standard
+        guard let data = userDefult.object(forKey: "diaryList") as? [[String: Any]] else { return }
+        self.diaryList = data.compactMap {
+            guard let title = $0["title"] as? String else { return nil }
+            guard let content = $0["content"] as? String else { return nil }
+            guard let date = $0["date"] as? Date else { return nil }
+            guard let isStar = $0["isStar"] as? Bool else { return nil }
+            return Diary(title: title, content: content, date: date, isStar: isStar)
+        }
+        
+        self.diaryList = self.diaryList.sorted(by: {
+            $0.date.compare($1.date) == .orderedDescending
+        })
+    }
+    
 }
 
 //MARK: -WriteDiaryViewDelegate
 extension ViewController: WriteDiaryViewDelegate {
     func didSelectRegister(diary: Diary) {
         self.diaryList.append(diary)
+        
+        self.diaryList = self.diaryList.sorted(by: {
+            $0.date.compare($1.date) == .orderedDescending
+        })
         
         self.collectionView.reloadData()
     }
