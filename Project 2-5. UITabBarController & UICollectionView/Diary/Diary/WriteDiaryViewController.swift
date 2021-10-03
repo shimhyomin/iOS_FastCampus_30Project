@@ -7,8 +7,14 @@
 
 import UIKit
 
+protocol WriteDiaryViewDelegate: AnyObject {
+    func didSelectRegister(diary: Diary)
+}
+
 class WriteDiaryViewController: UIViewController {
 
+    weak var delegate: WriteDiaryViewDelegate?
+    
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentTextView: UITextView!
     @IBOutlet weak var dateTextField: UITextField!
@@ -31,7 +37,14 @@ class WriteDiaryViewController: UIViewController {
     }
     
     @IBAction func confirmButtonPressed(_ sender: Any) {
+        guard let title = self.titleTextField.text else { return }
+        guard let content = self.contentTextView.text else { return }
+        guard let date = self.diaryDate else { return }
+        let diary = Diary(title: title, content: content, date: date, isStar: false)
+        self.delegate?.didSelectRegister(diary: diary)
         
+        //confirm button 누른 다음 pop view(ViewController로 이동)
+        self.navigationController?.popViewController(animated: true)
     }
 }
 //MARK: -contentTextView의 border 설정
