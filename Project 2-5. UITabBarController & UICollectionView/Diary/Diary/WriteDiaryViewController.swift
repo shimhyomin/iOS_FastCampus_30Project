@@ -7,6 +7,13 @@
 
 import UIKit
 
+//DiaryDetailViewController에서 edit button을 눌렀을 때를 위하여
+enum DiaryEditorMode {
+    case new
+    case edit(IndexPath, Diary)
+}
+
+//confirm button을 클릭했을 때 ViewController에서 동작하기 위하여
 protocol WriteDiaryViewDelegate: AnyObject {
     func didSelectRegister(diary: Diary)
 }
@@ -14,6 +21,8 @@ protocol WriteDiaryViewDelegate: AnyObject {
 class WriteDiaryViewController: UIViewController {
 
     weak var delegate: WriteDiaryViewDelegate?
+    
+    var diaryEditorMode: DiaryEditorMode = .new
     
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentTextView: UITextView!
@@ -28,6 +37,8 @@ class WriteDiaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.configureEditMode()
+        
         self.configureContentsTextView()
         self.configureDatePicker()
         
@@ -36,17 +47,46 @@ class WriteDiaryViewController: UIViewController {
         self.confirmButton.isEnabled = false
     }
     
+    private func configureEditMode() {
+        switch self.diaryEditorMode {
+        case let .edit(_, diary):
+            self.titleTextField.text = diary.title
+            self.contentTextView.text = diary.content
+            self.dateTextField.text = self.dateToString(date: diary.date)
+            self.diaryDate = diary.date
+            self.confirmButton.title = "수정"
+        default:
+            break
+        }
+    }
+    
+    //Date를 받아오면 String으로 변환하여 return 하는 함수
+    private func dateToString(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yy년 MM월 dd일(EEEE)"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: date)
+    }
+    
     @IBAction func confirmButtonPressed(_ sender: Any) {
         guard let title = self.titleTextField.text else { return }
         guard let content = self.contentTextView.text else { return }
         guard let date = self.diaryDate else { return }
         let diary = Diary(title: title, content: content, date: date, isStar: false)
-        self.delegate?.didSelectRegister(diary: diary)
+        
+        switch self.diaryEditorMode {
+        case .new:
+            self.delegate?.didSelectRegister(diary: diary)
+        case let .edit(indexPath, _):
+            NotificationCenter.default.post(name: NSNotification.Name("editDiary"), object: diary, userInfo: ["indexPath.row": indexPath.row])
+        }
+        
         
         //confirm button 누른 다음 pop view(ViewController로 이동)
         self.navigationController?.popViewController(animated: true)
     }
 }
+
 //MARK: -contentTextView의 border 설정
 extension WriteDiaryViewController {
     //contentTextView에 테두리가 없어서 테두리를 그리는 함수

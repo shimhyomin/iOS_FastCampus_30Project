@@ -23,6 +23,18 @@ class ViewController: UIViewController {
         self.configureCollectionView()
         
         self.loadDiaryList()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(editDiaryNofitication(_:)), name: NSNotification.Name("editDiary"), object: nil)
+    }
+    
+    @objc func editDiaryNofitication(_ notification: Notification) {
+        guard let diary = notification.object as? Diary else { return }
+        guard let row = notification.userInfo?["indexPath.row"] as? Int else { return }
+        self.diaryList[row] = diary
+        self.diaryList = self.diaryList.sorted(by: {
+            $0.date.compare($1.date) == .orderedDescending
+        })
+        self.collectionView.reloadData()
     }
 
     private func configureCollectionView() {
@@ -113,5 +125,29 @@ extension ViewController: UICollectionViewDataSource {
 extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: (UIScreen.main.bounds.width / 2) - 20 , height: 200)
+    }
+}
+
+//MARK: -UICollectionViewDelegate
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let detailViewController = self.storyboard?.instantiateViewController(withIdentifier: "DiaryDetailViewController") as? DiaryDetailViewController else { return }
+        
+        let diary = self.diaryList[indexPath.row]
+        
+        detailViewController.diary = diary
+        detailViewController.indexPath = indexPath
+        
+        detailViewController.delegate = self
+        
+        self.navigationController?.pushViewController(detailViewController, animated: true)
+    }
+}
+
+//MARK: -DiaryDetailViewDelegate
+extension ViewController: DiaryDetailViewDelegate {
+    func didSelectDelete(indexPath: IndexPath) {
+        self.diaryList.remove(at: indexPath.row)
+        self.collectionView.deleteItems(at: [indexPath])
     }
 }
