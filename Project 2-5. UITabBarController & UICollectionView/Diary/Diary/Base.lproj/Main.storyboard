@@ -12,7 +12,6 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Diary" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
@@ -59,6 +58,10 @@
                                             </constraints>
                                         </collectionViewCellContentView>
                                         <size key="customSize" width="180" height="200"/>
+                                        <connections>
+                                            <outlet property="dateLabel" destination="n9m-H2-XPx" id="D9i-T5-UPv"/>
+                                            <outlet property="titleLabel" destination="1zh-vd-NlF" id="Xb0-WB-7BB"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
@@ -79,7 +82,11 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="collectionView" destination="idI-Tx-Cnu" id="Yvk-jW-SNl"/>
+                    </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1375" y="-277"/>
         </scene>
@@ -154,8 +161,18 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="일기 작성" id="tFP-aY-a4R">
-                        <barButtonItem key="rightBarButtonItem" title="등록" id="baw-Do-Fbn"/>
+                        <barButtonItem key="rightBarButtonItem" title="등록" id="baw-Do-Fbn">
+                            <connections>
+                                <action selector="confirmButtonPressed:" destination="jRh-cT-k9K" id="6Vu-gO-vdZ"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="confirmButton" destination="baw-Do-Fbn" id="aqn-2A-HNI"/>
+                        <outlet property="contentTextView" destination="Ddo-33-7T3" id="Q7S-d3-k9c"/>
+                        <outlet property="dateTextField" destination="DaE-hA-cUL" id="DPi-y2-Wjn"/>
+                        <outlet property="titleTextField" destination="YkO-9R-cMg" id="RtY-RM-gLD"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fIa-8n-0J8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -368,7 +385,6 @@
         <!--Tab Bar Controller-->
         <scene sceneID="XOp-cO-MZf">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Cek-Tk-4vp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <tabBarController id="TWG-QU-HNU" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Bd2-Vl-9mW">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
@@ -380,6 +396,7 @@
                         <segue destination="XHR-Nb-nxa" kind="relationship" relationship="viewControllers" id="LWf-V9-9i1"/>
                     </connections>
                 </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Cek-Tk-4vp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-186" y="-89"/>
         </scene>
